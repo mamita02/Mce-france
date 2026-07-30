@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { IMG } from '../mock';
-import heroImage from '../assets/hero.png';
+import heroImage from '../assets/hero1.png';
 import ordi from '../assets/ordi.png';
 
 export default function Home() {
