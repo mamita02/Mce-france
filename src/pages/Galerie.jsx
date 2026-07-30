@@ -1,0 +1,296 @@
+import React, { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowLeft, ArrowRight, CalendarDays, GraduationCap, Grid3X3, Handshake, Heart, Maximize2, Trophy, X } from 'lucide-react';
+
+// ============================================================
+// ⚠️ IMPORT DE TOUTES LES PHOTOS DU DOSSIER /assets/networking/
+// Chaque photo est utilisée UNE SEULE FOIS dans la galerie.
+// ============================================================
+
+// Événements MCE
+import event1 from '../assets/networking/event1.jpeg';
+import event2 from '../assets/networking/event2.jpeg';
+import partageSavoirGofar from '../assets/networking/partage-savoir-gofar.jpg';
+import sessionTravailMce from '../assets/networking/session-travail-mce.jpg';
+import remisePrixStayup from '../assets/networking/remise-prix-stayup.png';
+
+// Inspiration / Gala / Portraits
+import inspi1 from '../assets/networking/inspi1.jpeg';
+import inspi2 from '../assets/networking/inspi2.jpeg';
+import inspi3 from '../assets/networking/inspi3.jpeg';
+import inspi6 from '../assets/networking/inspi6.jpeg';
+import inspi7 from '../assets/networking/inspi7.jpeg';
+import inspi8 from '../assets/networking/inspi8.jpeg';
+import inspi10 from '../assets/networking/inspi10.jpeg';
+import inspi11 from '../assets/networking/inspi11.jpeg';
+import inspi12 from '../assets/networking/inspi12.jpeg';
+import inspi13 from '../assets/networking/inspi13.jpeg';
+
+// Volet social & solidarité
+import social2 from '../assets/networking/social2.jpeg';
+import social3 from '../assets/networking/social3.jpeg';
+import kebaSignature from '../assets/networking/keba-signature.jpg';
+
+// Sport & team building
+import sport1 from '../assets/networking/sport1.jpeg';
+import sport2 from '../assets/networking/sport2.jpeg';
+import sport3 from '../assets/networking/sport3.jpeg';
+import sportEffort from '../assets/networking/sport-effort.png';
+import sportPartage from '../assets/networking/sport-partage.png';
+
+// Forum Stayup 2025
+import stayip1 from '../assets/networking/stayip1.jpeg';
+import stayup2 from '../assets/networking/stayup2.jpeg';
+import afterworkGofar from '../assets/networking/afterwork-gofar.jpg';
+
+// Femmes leaders & entrepreneuriat féminin
+import women1 from '../assets/networking/women1.jpg';
+import women2 from '../assets/networking/women2.jpg';
+import socialEnfantImpact from '../assets/networking/social-enfant-impact.png';
+
+// ============================================================
+// FILTRES
+// ============================================================
+const FILTERS = [
+  ['Tous', Grid3X3],
+  ['Événements', CalendarDays],
+  ['Partenaires', Handshake],
+  ['Social', Heart],
+  ['Sport', Trophy],
+  ['Formations', GraduationCap],
+];
+
+const PARTNERS = ['Tous les partenaires', 'GoFar Holding', 'Keba Consulting', 'Sparks Project'];
+
+// ============================================================
+// ITEMS DE LA GALERIE — 29 photos uniques
+// 📌 id unique, title unique, image unique → pas de collisions React
+// 📐 sizes alternées (wide / tall / standard) pour un beau masonry
+// 💡 Ordre pensé pour un rendu équilibré en mode "Tous"
+// ============================================================
+const ITEMS = [
+  // ============ ÉVÉNEMENTS (7) ============
+  { id: 'ev-01', title: 'Assise des Bâtisseurs avec IDRISS ABERKANE', subtitle: 'FORUM DE L’ÉCONOMIE RÉELLE & DE LA CRÉATION DE VALEUR', description: 'Au Grand Théâtre National de Dakar en avril 2026', category: 'Événements', partner: 'Sparks Project', image: event1, size: 'wide' },
+  { id: 'ev-02', title: 'Queen Buffet Mai 2026',       subtitle: 'Soirée de Gala',                  category: 'Événements',  image: event2,   size: 'wide' },
+  { id: 'ev-03', title: 'Queen Buffet Mai 2026',       subtitle: 'Soirée de Gala',                  category: 'Événements',  image: inspi6,   size: 'tall' },
+  { id: 'ev-04', title: 'Salon Stayup — Panel',       subtitle: 'Paysages & Numérique',            category: 'Événements', partner: 'GoFar Holding', image: stayup2, size: 'standard' },
+  { id: 'ev-05', title: 'Stay-Up 2025',                subtitle: 'Cérémonie de remise de prix',      category: 'Événements', partner: 'GoFar Holding', image: stayip1, size: 'tall' },
+  { id: 'ev-06', title: 'Atelier autour du Pardon', description: 'Développement Personnel & Confiance', category: 'Événements', partner: 'Keba Consulting', image: inspi1, size: 'tall' },
+  { id: 'ev-07', title: 'Mme AMANE Mounia au Forum des Bâtisseurs avec IDRISS ABERKANE', category: 'Événements', partner: 'Sparks Project', image: inspi7, size: 'tall' },
+  { id: 'ev-08', title: 'Collaboration entre MCE Sénégal & GoFar Holding', description: 'Entretien autour de la Femme Africaine', category: 'Événements', partner: 'GoFar Holding', image: afterworkGofar, size: 'tall' },
+  { id: 'ev-09', title: 'Un moment de partage de savoir', subtitle: 'Chaque apprentissage est une pierre posée sur le chemin de l’excellence.', description: 'Avec la Directrice de MCE', category: 'Événements', partner: 'GoFar Holding', image: partageSavoirGofar, size: 'tall' },
+  { id: 'ev-10', title: 'Session de travail avec l’équipe de MCE', description: 'Des esprits engagés, une vision commune, des résultats à construire.', category: 'Événements', image: sessionTravailMce, size: 'tall' },
+  { id: 'ev-11', title: 'Honneur aux performances, hommage aux parcours', description: 'Remise de prix lors d’une cérémonie organisée par StayUp', category: 'Événements', partner: 'GoFar Holding', image: remisePrixStayup, size: 'standard' },
+
+  // ============ PARTENAIRES (4) ============
+  { id: 'pa-01', title: 'Ensemble pour transformer les ambitions en résultats.', subtitle: 'Wellness Family International X MCE Sénégal', category: 'Partenaires', image: inspi3, size: 'tall' },
+  { id: 'pa-02', title: 'Deux expertises. Une ambition commune.', subtitle: 'Un partenariat stratégique au service de votre réussite', description: 'Keba Consulting X MCE Sénégal', category: 'Partenaires', partner: 'Keba Consulting', image: kebaSignature, size: 'tall' },
+  { id: 'pa-03', title: 'Mor DIOP - Directeur de Sparks Projet', subtitle: 'Au Queen Buffet - Mai 2026', category: 'Événements', partner: 'Sparks Project', image: inspi8, size: 'tall' },
+  { id: 'pa-04', title: 'Équipe de MCE Sénégal', subtitle: 'Au Queen Buffet - Mai 2026', category: 'Événements', partner: 'Sparks Project', image: inspi13, size: 'tall' },
+
+  // ============ SOCIAL (5) ============
+  { id: 'so-02', title: 'Directrice MCE au contact de la population', subtitle: 'MCE au Cœur de la Communauté', category: 'Social', image: social2, size: 'standard' },
+  { id: 'so-03', title: 'Une journée avec Empire des Enfants', subtitle: 'MCE - La Solidarité en Action', category: 'Social', image: social3, size: 'standard' },
+  { id: 'so-04', title: 'Chef de Projet MCE', subtitle: 'Quand l’équipe participe, chaque activité devient une opportunité de grandir ensemble.', category: 'Événements', partner: 'GoFar Holding', image: women1, size: 'tall' },
+  { id: 'so-05', title: 'Un partenariat qui crée de la valeur.', subtitle: 'MCE Sénégal X GoFar Holding : un partenariat pour accompagner les entreprises, les talents et les territoires.', category: 'Événements', partner: 'GoFar Holding', image: women2, size: 'standard' },
+
+  // ============ SPORT (3) ============
+  { id: 'sp-01', title: 'Cohésion par le sport',       subtitle: 'Équipe & fair-play',             category: 'Sport', image: sport1, size: 'wide' },
+  { id: 'sp-02', title: 'Dépassement collectif',       subtitle: 'Endurance & ambition',           category: 'Sport', image: sport2, size: 'standard' },
+  { id: 'sp-03', title: 'L\'énergie du terrain',       subtitle: 'Team building actif',            category: 'Sport', image: sport3, size: 'wide' },
+  { id: 'sp-04', title: 'Unis par le sport, renforcés par l’effort', subtitle: 'Une occasion de se dépasser, de s’amuser et de construire un esprit d’équipe solide.', category: 'Sport', image: sportEffort, size: 'tall' },
+  { id: 'sp-05', title: 'Pause, partage et bonne humeur', subtitle: 'Au-delà des missions, ce sont les liens humains qui font la force d’une équipe.', category: 'Sport', image: sportPartage, size: 'wide' },
+
+  // ============ NOUVELLE ACTION SOCIALE ============
+  { id: 'so-06', title: 'Un geste, un sourire, un impact', subtitle: 'Parce que chaque enfant mérite d’être valorisé, écouté et accompagné.', category: 'Social', image: socialEnfantImpact, size: 'tall' },
+
+  // ============ FORMATIONS (4) ============
+  { id: 'fo-01', title: 'Atelier autour du Pardon', subtitle: 'MCE X Keba Consulting : Main dans la Main', category: 'Formations', partner: 'Keba Consulting', image: inspi2, size: 'tall' },
+  { id: 'fo-02', title: 'Réflexion autour de la jeunesse', subtitle: 'À l’Université Cheikh Anta Diop (UCAD) de Dakar', category: 'Formations', image: inspi10, size: 'standard' },
+  { id: 'fo-03', title: 'Au-delà du partenariat, c’est une transmission de savoir.', description: 'MCE X Keba Consulting : Main dans la Main', category: 'Formations', partner: 'Keba Consulting', image: inspi11, size: 'standard' },
+  { id: 'fo-04', title: 'La Directrice de MCE avec l’équipe de Keba Consulting', subtitle: 'Atelier sur le Pardon.', description: 'Une période pour apprendre, une étape pour se révéler.', category: 'Formations', partner: 'Keba Consulting', image: inspi12, size: 'standard' },
+];
+
+// ============================================================
+// COMPOSANT
+// ============================================================
+export default function Galerie() {
+  const [filter, setFilter] = useState('Tous');
+  const [partnerFilter, setPartnerFilter] = useState('Tous les partenaires');
+  const [selected, setSelected] = useState(null);
+
+  // ✅ Filtrage combiné : catégorie + sous-partenaire
+  const visible = ITEMS.filter(item =>
+    (filter === 'Tous' || item.category === filter || (filter === 'Partenaires' && item.partner)) &&
+    (filter !== 'Partenaires' || partnerFilter === 'Tous les partenaires' || item.partner === partnerFilter)
+  );
+
+  // ✅ Navigation lightbox — utilise l'id (unique) au lieu du title
+  const moveLightbox = (direction) => {
+    const index = ITEMS.findIndex(item => item.id === selected.id);
+    setSelected(ITEMS[(index + direction + ITEMS.length) % ITEMS.length]);
+  };
+
+  // ✅ Correction : dependency array pour éviter les recréations d'event listener
+  useEffect(() => {
+    const onKey = (event) => {
+      if (!selected) return;
+      if (event.key === 'Escape') setSelected(null);
+      if (event.key === 'ArrowLeft') moveLightbox(-1);
+      if (event.key === 'ArrowRight') moveLightbox(1);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected]);
+
+  return (
+    <main className="gallery-page pt-[72px]">
+      <section id="galerie" className="mce-gallery gallery-library">
+        <div className="mce-gallery-orb mce-gallery-orb-one" aria-hidden="true" />
+        <div className="mce-gallery-orb mce-gallery-orb-two" aria-hidden="true" />
+        <div className="mce-about-container">
+          <header className="gallery-library-head">
+            <div>
+              <h2>Explorez les moments forts de MCE.</h2>
+              <p>Choisissez une catégorie et découvrez les projets, les rencontres et les énergies qui font vivre notre écosystème.</p>
+            </div>
+          </header>
+
+          <div className="gallery-filter-row">
+            <nav className="mce-gallery-filters gallery-sticky-filters" aria-label="Filtrer la galerie">
+              {FILTERS.map(([item, Icon]) => (
+                <button
+                  key={item}
+                  type="button"
+                  className={filter === item ? 'active' : ''}
+                  onClick={() => {
+                    setFilter(item);
+                    if (item !== 'Partenaires') setPartnerFilter('Tous les partenaires');
+                  }}
+                  aria-pressed={filter === item}
+                >
+                  <Icon />{item}
+                </button>
+              ))}
+              <AnimatePresence>
+                {(filter !== 'Tous' || partnerFilter !== 'Tous les partenaires') && (
+                  <motion.button
+                    type="button"
+                    className="gallery-reset-filter"
+                    initial={{ opacity: 0, scale: .75, width: 0 }}
+                    animate={{ opacity: 1, scale: 1, width: 'auto' }}
+                    exit={{ opacity: 0, scale: .75, width: 0 }}
+                    onClick={() => { setFilter('Tous'); setPartnerFilter('Tous les partenaires'); }}
+                  >
+                    <X /> Réinitialiser
+                  </motion.button>
+                )}
+              </AnimatePresence>
+            </nav>
+            <p className="gallery-image-count">
+              <b>{visible.length}</b> image{visible.length > 1 ? 's' : ''} à découvrir
+            </p>
+          </div>
+
+          <AnimatePresence>
+            {filter === 'Partenaires' && (
+              <motion.nav
+                className="gallery-partner-filters"
+                aria-label="Filtrer par partenaire"
+                initial={{ opacity: 0, y: -12, height: 0 }}
+                animate={{ opacity: 1, y: 0, height: 'auto' }}
+                exit={{ opacity: 0, y: -8, height: 0 }}
+              >
+                <span>Sous-partenaire</span>
+                {PARTNERS.map(partner => (
+                  <button
+                    key={partner}
+                    type="button"
+                    className={partnerFilter === partner ? 'active' : ''}
+                    onClick={() => setPartnerFilter(partner)}
+                  >
+                    {partner}
+                  </button>
+                ))}
+              </motion.nav>
+            )}
+          </AnimatePresence>
+
+          <div className="mce-gallery-grid">
+            <AnimatePresence initial={false}>
+              {visible.map((item, index) => (
+                <motion.figure
+                  key={item.id}
+                  className={`mce-gallery-card mce-gallery-${item.size}`}
+                  initial={{ opacity: 0, y: 26 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -14 }}
+                  transition={{ duration: .5, delay: index * .045, ease: [.2, .8, .2, 1] }}
+                  whileHover={{ y: -7 }}
+                  onClick={() => setSelected(item)}
+                >
+                  <img src={item.image} alt={item.title} loading="lazy" style={{objectPosition:item.size === 'tall' ? 'center 24%' : 'center'}} />
+                  <figcaption>
+                    <div className="gallery-card-tags">
+                      <span>#{item.category}</span>
+                      {item.partner && <span>#{item.partner}</span>}
+                    </div>
+                    <b className={item.title.length > 46 ? 'gallery-card-title-long' : ''}>{item.title}</b>
+                    {item.subtitle && <small>{item.subtitle}</small>}
+                    {item.description && <p className="gallery-card-description">{item.description}</p>}
+                    <i><Maximize2 /></i>
+                  </figcaption>
+                </motion.figure>
+              ))}
+            </AnimatePresence>
+          </div>
+        </div>
+      </section>
+
+      {/* ========== LIGHTBOX ========== */}
+      <AnimatePresence>
+        {selected && (
+          <motion.div
+            className="gallery-lightbox"
+            role="dialog"
+            aria-modal="true"
+            aria-label={selected.title}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelected(null)}
+          >
+            <button className="gallery-lightbox-close" type="button" onClick={() => setSelected(null)} aria-label="Fermer">
+              <X />
+            </button>
+            <button className="gallery-lightbox-prev" type="button" onClick={(e) => { e.stopPropagation(); moveLightbox(-1); }} aria-label="Image précédente">
+              <ArrowLeft />
+            </button>
+            <motion.figure
+              key={selected.id}
+              initial={{ scale: .88, y: 25 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: .9 }}
+              onClick={e => e.stopPropagation()}
+            >
+              <img src={selected.image} alt={selected.title} />
+              <figcaption>
+                <div className="gallery-lightbox-tags">
+                  <span>#{selected.category}</span>
+                  {selected.partner && <span>#{selected.partner}</span>}
+                </div>
+                <h2>{selected.title}</h2>
+                {selected.subtitle && <p className="gallery-lightbox-subtitle">{selected.subtitle}</p>}
+                {selected.description && <p className="gallery-lightbox-description">{selected.description}</p>}
+              </figcaption>
+            </motion.figure>
+            <button className="gallery-lightbox-next" type="button" onClick={(e) => { e.stopPropagation(); moveLightbox(1); }} aria-label="Image suivante">
+              <ArrowRight />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </main>
+  );
+}
